@@ -22,10 +22,10 @@
 <script lang="ts">
 import { useI18n } from 'vue-i18n';
 import { defineComponent, computed } from 'vue';
-import { getInterface } from '@/interfaces';
 import { useFieldDetailStore, syncFieldDetailStoreProperty } from '../store/';
 import { storeToRefs } from 'pinia';
 import ExtensionOptions from '../shared/extension-options.vue';
+import { useExtension } from '@/composables/use-extension';
 
 export default defineComponent({
 	components: { ExtensionOptions },
@@ -34,7 +34,7 @@ export default defineComponent({
 
 		const fieldDetailStore = useFieldDetailStore();
 
-		const interfaceID = syncFieldDetailStoreProperty('field.meta.interface');
+		const interfaceId = syncFieldDetailStoreProperty('field.meta.interface');
 
 		const { field, interfacesForType } = storeToRefs(fieldDetailStore);
 		const type = computed(() => field.value.type);
@@ -93,15 +93,11 @@ export default defineComponent({
 			return recommendedItems;
 		});
 
-		const selectedInterface = computed(() => getInterface(interfaceID.value));
-
-		const extensionInfo = computed(() => {
-			return getInterface(interfaceID.value);
-		});
+		const selectedInterface = useExtension('interface', interfaceId);
 
 		const customOptionsFields = computed(() => {
-			if (typeof extensionInfo.value?.options === 'function') {
-				return extensionInfo.value?.options(fieldDetailStore);
+			if (typeof selectedInterface.value?.options === 'function') {
+				return selectedInterface.value?.options(fieldDetailStore);
 			}
 
 			return null;
