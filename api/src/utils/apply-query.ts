@@ -44,6 +44,9 @@ export default function applyQuery(
 
 	if (query.offset) {
 		dbQuery.offset(query.offset);
+	} else {
+		// Needed for MSSQL
+		dbQuery.offset(0);
 	}
 
 	if (query.page && query.limit && query.limit !== -1) {
